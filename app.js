@@ -14,13 +14,7 @@ app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(function (err, req, res, next) {
-    console.error('ERROR', err.stack);
-    res.status(500).send('Something broke!');
-});
-
 app.use('/', indexRouter);
 app.use('/worked-hours', workedHoursRouter);
-
 
 module.exports = app;
