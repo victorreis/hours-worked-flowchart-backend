@@ -4,7 +4,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 var indexRouter = require('./src/routes/index');
-var usersRouter = require('./src/routes/users');
+var workedHoursRouter = require('./src/routes/worked-hours');
 
 var app = express();
 
@@ -14,7 +14,13 @@ app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(function (err, req, res, next) {
+    console.error('ERROR', err.stack);
+    res.status(500).send('Something broke!');
+});
+
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/worked-hours', workedHoursRouter);
+
 
 module.exports = app;
