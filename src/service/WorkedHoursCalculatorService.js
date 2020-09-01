@@ -26,18 +26,18 @@ const verifyRules = (startMoment, finishMoment) => {
 };
 
 const createMomentFromHourMinute = (hour, minute) => {
-    if (hour && minute) {
+    if (
+        Number.isInteger(Number.parseInt(hour)) &&
+        Number.isInteger(Number.parseInt(minute))
+    ) {
         return moment().set({hour, minute, second: 0});
     }
-    throw 'ERROR';
+    throw 'Number conversion error.';
 };
 
 const formatMoment = (moment) => {
     return moment?.format('HH:mm');
 };
-
-const daytimeMomentLimit = createMomentFromHourMinute(21, 59);
-const nightMomentLimit = createMomentFromHourMinute(4, 59);
 
 function getRandomInt(min, max) {
     min = Math.ceil(min);
@@ -77,15 +77,28 @@ const calculate = {
 };
 
 const determineLetters = (startMoment, finishMoment) => {
-    const letter1 = 's';
-    const letter2 = 'f';
-    return {letter1, letter2};
+    if (startMoment.isBefore(finishMoment)) {
+        return {letter1: 's', letter2: 'f'};
+    }
+    return {letter1: 'f', letter2: 's'};
 };
 
 const determineNumbers = (startMoment, finishMoment) => {
-    const number1 = '1';
-    const number2 = '1';
-    return {number1, number2};
+    const zeroHourMoment = createMomentFromHourMinute(0, 0);
+    const nightMomentLimit = createMomentFromHourMinute(4, 59);
+    const daytimeMomentLimit = createMomentFromHourMinute(21, 59);
+    const twentyFourHoursMoment = createMomentFromHourMinute(23, 59);
+
+    const isStartBetween0AndFirstLimit = true;
+    const isFinishBetween0AndFirstLimit = true;
+
+    const isStartBetweenFirstLimitAndSecondLimit = false;
+    const isFinishBetweenFirstLimitAndSecondLimit = false;
+
+    const isStartBetweenSecondLimitAnd24 = false;
+    const isFinishBetweenSecondLimitAnd24 = false;
+
+    return {number1: 1, number2: 1};
 };
 
 const calculateHoursPerPeriod = (startTime, finishTime) => {
