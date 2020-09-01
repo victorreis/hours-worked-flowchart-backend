@@ -36,7 +36,7 @@ const createMomentFromHourMinute = (hour, minute) => {
 };
 
 const formatMoment = (moment) => {
-    return moment?.format('HH:mm');
+    return moment.format('HH:mm');
 };
 
 function getRandomInt(min, max) {
@@ -52,11 +52,25 @@ const randomMoment = () => {
     });
 };
 
+const zeroFilled = (number) => ('00' + Math.round(number)).slice(-2);
+
+const calculateDifference = (moment1, moment2) => {
+    const differenceInHours = moment1.diff(moment2, 'hours');
+    const differenceInMinutes = moment1.diff(moment2, 'minutes');
+    const hours = zeroFilled(differenceInHours);
+    const minutes = zeroFilled(differenceInMinutes - differenceInHours * 60);
+    return `${hours}:${minutes}`;
+};
+
+const ZERO_HOUR = '00:00';
+const zeroHourMoment = createMomentFromHourMinute(0, 0);
 const calculate = {
-    s1f1: (m1, m2) => ({
-        daytimeHours: randomMoment(),
-        nightHours: randomMoment(),
-    }),
+    s1f1: (m1, m2) => {
+        return {
+            daytimeHours: ZERO_HOUR,
+            nightHours: calculateDifference(m2, m1),
+        };
+    },
     s1f2: (m1, m2) => ({daytimeHours: m1, nightHours: m2}),
     s1f3: (m1, m2) => ({daytimeHours: m1, nightHours: m2}),
     s2f1: (m1, m2) => ({daytimeHours: m1, nightHours: m2}),
@@ -86,36 +100,47 @@ const determineLetters = (startMoment, finishMoment) => {
 // Eu poderia ter usado algum design patter nessa função para deixar
 // ela com menos ifs, mas estou com pouco tempo.
 const determineNumbers = (startMoment, finishMoment) => {
-    const zeroHourMoment = createMomentFromHourMinute(0, 0);
     const nightMomentLimit = createMomentFromHourMinute(4, 59);
     const daytimeMomentLimit = createMomentFromHourMinute(21, 59);
     const twentyFourHoursMoment = createMomentFromHourMinute(23, 59);
 
     const isStartBetween0And1stLimit = startMoment.isBetween(
         zeroHourMoment,
-        nightMomentLimit
+        nightMomentLimit,
+        undefined,
+        '[]'
     );
-    const isFinishBetween0And1stLimit = startMoment.isBetween(
+    const isFinishBetween0And1stLimit = finishMoment.isBetween(
         zeroHourMoment,
-        nightMomentLimit
+        nightMomentLimit,
+        undefined,
+        '[]'
     );
 
     const isStartBetween1stLimitAnd2ndLimit = startMoment.isBetween(
         nightMomentLimit,
-        daytimeMomentLimit
+        daytimeMomentLimit,
+        undefined,
+        '[]'
     );
-    const isFinishBetween1stLimitAnd2ndLimit = startMoment.isBetween(
+    const isFinishBetween1stLimitAnd2ndLimit = finishMoment.isBetween(
         nightMomentLimit,
-        daytimeMomentLimit
+        daytimeMomentLimit,
+        undefined,
+        '[]'
     );
 
     const isStartBetween2ndLimitAnd24 = startMoment.isBetween(
         daytimeMomentLimit,
-        twentyFourHoursMoment
+        twentyFourHoursMoment,
+        undefined,
+        '[]'
     );
-    const isFinishBetween2ndLimitAnd24 = startMoment.isBetween(
+    const isFinishBetween2ndLimitAnd24 = finishMoment.isBetween(
         daytimeMomentLimit,
-        twentyFourHoursMoment
+        twentyFourHoursMoment,
+        undefined,
+        '[]'
     );
 
     if (isStartBetween0And1stLimit) {
@@ -156,14 +181,15 @@ const calculateHoursPerPeriod = (startTime, finishTime) => {
 
     // Caculating the daytime hours and night hours
     const functionName = letter1 + number1 + letter2 + number2;
+    console.log('functionName', functionName);
     const {daytimeHours, nightHours} = calculate[functionName](
         startMoment,
         finishMoment
     );
 
     return {
-        daytimeHours: formatMoment(daytimeHours),
-        nightHours: formatMoment(nightHours),
+        daytimeHours,
+        nightHours,
     };
 };
 
