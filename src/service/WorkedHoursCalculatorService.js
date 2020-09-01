@@ -83,22 +83,67 @@ const determineLetters = (startMoment, finishMoment) => {
     return {letter1: 'f', letter2: 's'};
 };
 
+// Eu poderia ter usado algum design patter nessa função para deixar
+// ela com menos ifs, mas estou com pouco tempo.
 const determineNumbers = (startMoment, finishMoment) => {
     const zeroHourMoment = createMomentFromHourMinute(0, 0);
     const nightMomentLimit = createMomentFromHourMinute(4, 59);
     const daytimeMomentLimit = createMomentFromHourMinute(21, 59);
     const twentyFourHoursMoment = createMomentFromHourMinute(23, 59);
 
-    const isStartBetween0AndFirstLimit = true;
-    const isFinishBetween0AndFirstLimit = true;
+    const isStartBetween0And1stLimit = startMoment.isBetween(
+        zeroHourMoment,
+        nightMomentLimit
+    );
+    const isFinishBetween0And1stLimit = startMoment.isBetween(
+        zeroHourMoment,
+        nightMomentLimit
+    );
 
-    const isStartBetweenFirstLimitAndSecondLimit = false;
-    const isFinishBetweenFirstLimitAndSecondLimit = false;
+    const isStartBetween1stLimitAnd2ndLimit = startMoment.isBetween(
+        nightMomentLimit,
+        daytimeMomentLimit
+    );
+    const isFinishBetween1stLimitAnd2ndLimit = startMoment.isBetween(
+        nightMomentLimit,
+        daytimeMomentLimit
+    );
 
-    const isStartBetweenSecondLimitAnd24 = false;
-    const isFinishBetweenSecondLimitAnd24 = false;
+    const isStartBetween2ndLimitAnd24 = startMoment.isBetween(
+        daytimeMomentLimit,
+        twentyFourHoursMoment
+    );
+    const isFinishBetween2ndLimitAnd24 = startMoment.isBetween(
+        daytimeMomentLimit,
+        twentyFourHoursMoment
+    );
 
-    return {number1: 1, number2: 1};
+    if (isStartBetween0And1stLimit) {
+        if (isFinishBetween0And1stLimit) {
+            return {number1: 1, number2: 1};
+        } else if (isFinishBetween1stLimitAnd2ndLimit) {
+            return {number1: 1, number2: 2};
+        } else if (isFinishBetween2ndLimitAnd24) {
+            return {number1: 1, number2: 3};
+        }
+    } else if (isStartBetween1stLimitAnd2ndLimit) {
+        if (isFinishBetween0And1stLimit) {
+            return {number1: 2, number2: 1};
+        } else if (isFinishBetween1stLimitAnd2ndLimit) {
+            return {number1: 2, number2: 2};
+        } else if (isFinishBetween2ndLimitAnd24) {
+            return {number1: 2, number2: 3};
+        }
+    } else if (isStartBetween2ndLimitAnd24) {
+        if (isFinishBetween0And1stLimit) {
+            return {number1: 3, number2: 1};
+        } else if (isFinishBetween1stLimitAnd2ndLimit) {
+            return {number1: 3, number2: 2};
+        } else if (isFinishBetween2ndLimitAnd24) {
+            return {number1: 3, number2: 3};
+        }
+    }
+    throw 'Can not determine the number sequence.';
 };
 
 const calculateHoursPerPeriod = (startTime, finishTime) => {
